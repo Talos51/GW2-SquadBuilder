@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Talos.1875">
+  <meta name="description" content="WvW Squad Builder, codé avec ❤️ par Talos.1875.">
+  <meta name="keywords" content="Guild Wars 2, GW2, McM, WvW, classes, groupes, build, squad, Talos">
+  <meta name="robots" content="index, follow">
+  <title>WvW Squad Builder - Guild Wars 2</title>
+  <style>
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+h3 {
+  margin-top: 0;
+  font-size: 1.2em;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+}
+
+button {
+  margin: 5px 5px 5px 0;
+  padding: 6px 12px;
+  border: none;
+  background-color: #0078d7;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #005fa3;
+}
+
+#sidebar {
+  width: 300px;
+  padding: 15px;
+  border-right: 1px solid #ccc;
+  background-color: var(--bg);
+}
+
+#main {
+  flex: 1;
+  padding: 20px;
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  margin: 5px;
+  cursor: grab;
+  border-radius: 6px;
+  transition: transform 0.2s;
+}
+
+.icon:hover {
+  transform: scale(1.1);
+}
+
+.group {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.slot {
+  width: 110px;
+  min-width: 110px;
+  height: 112px;
+  border: 2px dashed #aaa;
+  margin-right: 5px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: background-color 0.2s;
+}
+
+.slot:hover {
+  background-color: #e0e0e0;
+}
+
+.player-name {
+  box-sizing: border-box;
+  width: 96px;
+  max-width: calc(100% - 8px);
+  margin: 1px 0 3px;
+  padding: 3px 4px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  font: 12px 'Segoe UI', sans-serif;
+  text-align: center;
+  color: #222;
+  background: #fff;
+}
+
+.dark-mode .player-name {
+  color: #f0f0f0;
+  background: #2a2a2a;
+  border-color: #555;
+}
+
+#mode-toggle {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 22px;
+  padding: 5px;
+  background-color: var(--bg);
+  border: 1px solid #ccc;
+  border-radius: 50%;
+}
+
+.group-number {
+  font-size: 16px;
+  color: #444;
+}
+.dark-mode .group-number {
+  color: #ccc;
+}
+
+#stats {
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+#details {
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.dark-mode {
+  --bg: #121212;
+  --text: #f0f0f0;
+}
+
+.dark-mode .slot {
+  background-color: #1e1e1e;
+  border-color: #555;
+}
+
+.dark-mode .slot:hover {
+  background-color: #333;
+}
+
+.dark-mode button {
+  background-color: #444;
+  color: #eee;
+}
+
+.dark-mode button:hover {
+  background-color: #666;
+}
+
+.slot.dropped {
+  animation: pulse 0.3s ease;
+}
+
+.footer {
+  text-align: center;
+  padding: 16px;
+  font-size: 14px;
+  font-family: 'Segoe UI', sans-serif;
+  border-top: 1px solid;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode .footer {
+  background-color: #1a1a1a;
+  color: #ccc;
+  border-color: #333;
+}
+
+body:not(.dark-mode) .footer {
+  background-color: #f5f5f5;
+  color: #444;
+  border-color: #ddd;
+}
+
+.footer .heart {
+  color: #e25555;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+#custom-compo {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  font-family: 'Segoe UI', sans-serif;
+  max-width: 400px;
+}
+
+body.dark-mode #custom-compo {
+  background-color: #1e1e1e;
+  border: 1px solid #444;
+  color: #ddd;
+}
+
+body:not(.dark-mode) #custom-compo {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  color: #333;
+}
+
+body.dark-mode #custom-compo h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #fff;
+  border-bottom: 1px solid #555;
+  padding-bottom: 5px;
+}
+
+body:not(.dark-mode) #custom-compo h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #333;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+}
+
+#custom-compo label {
+  display: block;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+body.dark-mode #custom-compo input[type="number"] {
+  width: 60px;
+  padding: 4px;
+  margin-left: 10px;
+  background-color: #2a2a2a;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #fff;
+}
+
+body:not(.dark-mode) #custom-compo input[type="number"] {
+  width: 60px;
+  padding: 4px;
+  margin-left: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #000;
+}
+
+#custom-compo button {
+  margin-top: 12px;
+  padding: 6px 12px;
+  background-color: #0078d7;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#custom-compo button:hover {
+  background-color: #005fa3;
+}
+
+#error-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #ff4d4d;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  font-size: 14px;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+  </style>
+</head>
+<body>
+  <div id="mode-toggle">🌓</div>
+  <div id="sidebar"><br />
+    <h3>Classes</h3>
+	<div id="filters">
+	  <strong>Filtrer par rôle :</strong><br>
+	  <button onclick="filterIcons('All')">Tous</button>
+	  <button onclick="filterIcons('Support')">Support</button>
+	  <button onclick="filterIcons('Healer')">Healer</button>
+	  <button onclick="filterIcons('Boon')">Boon</button>
+	  <button onclick="filterIcons('DPS')">DPS</button>
+	</div>
+    <div id="icons"></div>
+  </div>
+  <div id="main">
+    <div class="controls">
+      <button onclick="addGroup()">➕ Groupe</button>
+      <button onclick="removeGroup()">➖ Groupe</button>
+	  <button onclick="resetGroups()">🔄 Reset</button>
+	  <button onclick="document.getElementById('importFile').click()">📥 Import</button>
+	  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importComposition(event)">
+      <button onclick="exportComposition()">📤 Export</button>
+	  <button id="export-discord">
+	    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Discord" style="height: 16px; vertical-align: middle; margin-right: 6px;">
+	    Exporter Discord
+	  </button>
+	  <div id="custom-compo">
+	    <h4>Personnaliser la composition</h4>
+	    <label>Support: <input type="number" id="role-support" min="0" value="1"></label>
+	    <label>Healer: <input type="number" id="role-healer" min="0" value="1"></label>
+	    <label>Boon: <input type="number" id="role-boon" min="0" value="1"></label>
+	    <label>DPS: <input type="number" id="role-dps" min="0" value="2"></label>
+	    <button onclick="updateRoles()">✅ Appliquer</button>
+	  </div>
+    </div>
+	<hr>
+	<br /><br />
+    <div id="groups"></div>
+    <div id="stats"></div>
+    <div id="details"></div>
+	<footer class="footer">
+	  <p>Codé avec <span class="heart">❤️</span> par <strong>Talos.1875</strong></p>
+	</footer>
+  </div>
+
+  <script>
+	// Compo groupe
+    const roles = ["Support", "Healer", "Boon", "DPS", "DPS"];
+	// https://wiki.guildwars2.com/wiki/Guild_Wars_2_Wiki:Profession_icons
+    const classes = {
+		// Guard
+	  Guardian: { url: "https://wiki.guildwars2.com/images/5/53/Guardian_tango_icon_48px.png", roles: [], emoji : ":Guard:" },
+	  Dragonhunter: { url: "https://wiki.guildwars2.com/images/f/fe/Dragonhunter_tango_icon_48px.png", roles: ["Support", "DPS"], emoji : ":Dragonhunter:" },
+	  Firebrand: { url: "https://wiki.guildwars2.com/images/f/ff/Firebrand_tango_icon_48px.png", roles: ["Support"], emoji : ":Firebrand:" },
+	  Willbender: { url: "https://wiki.guildwars2.com/images/d/dd/Willbender_tango_icon_48px.png", roles: ["DPS"], emoji : ":Willbender:" },
+	  Luminary: { url: "https://wiki.guildwars2.com/images/d/d9/Luminary_tango_icon_48px.png", roles: ["Support"], emoji : ":Luminary:" },
+		// Ranger
+	  Ranger: { url: "https://wiki.guildwars2.com/images/b/b5/Ranger_tango_icon_48px.png", roles: ["DPS"], emoji : ":Ranger:" },
+	  Druid: { url: "https://wiki.guildwars2.com/images/9/91/Druid_tango_icon_48px.png", roles: ["Healer"], emoji : ":Druid:" },
+	  Soulbeast: { url: "https://wiki.guildwars2.com/images/4/4f/Soulbeast_tango_icon_48px.png", roles: ["DPS"], emoji : ":Soulbeast:" },
+	  Untamed: { url: "https://wiki.guildwars2.com/images/9/90/Untamed_tango_icon_48px.png", roles: ["DPS"], emoji : ":Untamed:" },
+	  Galeshot: { url: "https://wiki.guildwars2.com/images/6/67/Galeshot_tango_icon_48px.png", roles: ["DPS"], emoji : ":Galeshot:" },
+		// Mesmer
+	  Mesmer: { url: "https://wiki.guildwars2.com/images/3/38/Mesmer_tango_icon_48px.png", roles: ["DPS"], emoji : ":Mesmer:" },
+	  Chronomancer: { url: "https://wiki.guildwars2.com/images/f/f2/Chronomancer_tango_icon_48px.png", roles: ["Support"], emoji : ":Chronomancer:" },
+	  Mirage: { url: "https://wiki.guildwars2.com/images/9/94/Mirage_tango_icon_48px.png", roles: ["DPS"], emoji : ":Mirage:" },
+	  Virtuoso: { url: "https://wiki.guildwars2.com/images/2/21/Virtuoso_tango_icon_48px.png", roles: ["DPS"], emoji : ":Virtuose:" },
+	  Troubadour: { url: "https://wiki.guildwars2.com/images/3/35/Troubadour_tango_icon_48px.png", roles: ["Support"], emoji : ":Troubadour:" },
+		// Necro
+	  Necromancer: { url: "https://wiki.guildwars2.com/images/e/ea/Necromancer_tango_icon_48px.png", roles: ["DPS"], emoji : ":Necro:" },
+	  Reaper: { url: "https://wiki.guildwars2.com/images/3/39/Reaper_tango_icon_48px.png", roles: ["DPS"], emoji : ":Reaper:" },
+	  Scourge: { url: "https://wiki.guildwars2.com/images/4/49/Scourge_tango_icon_48px.png", roles: ["DPS"], emoji : ":Scourge:" },
+	  Harbinger: { url: "https://wiki.guildwars2.com/images/e/eb/Harbinger_tango_icon_48px.png", roles: ["Boon"], emoji : ":Harbinger:" },
+	  Ritualist: { url: "https://wiki.guildwars2.com/images/7/7a/Ritualist_tango_icon_48px.png", roles: ["DPS"], emoji : ":Ritualist:" },
+		// inge
+	  Engineer: { url: "https://wiki.guildwars2.com/images/d/dd/Engineer_tango_icon_48px.png", roles: ["DPS"], emoji : ":Ingenieur:" },	
+	  Holosmith: { url: "https://wiki.guildwars2.com/images/4/4f/Holosmith_tango_icon_48px.png", roles: ["DPS"], emoji : ":Holosmith:" },
+	  Scrapper: { url: "https://wiki.guildwars2.com/images/4/4a/Scrapper_tango_icon_48px.png", roles: ["Healer"], emoji : ":Scrap:" },
+	  Mechanist: { url: "https://wiki.guildwars2.com/images/f/f5/Mechanist_tango_icon_48px.png", roles: ["DPS"], emoji : ":Mecanist:" },
+	  Amalgam: { url: "https://wiki.guildwars2.com/images/5/5f/Amalgam_tango_icon_48px.png", roles: ["DPS"], emoji : ":Amalgam:" },
+		// War
+	  Warrior: { url: "https://wiki.guildwars2.com/images/2/28/Warrior_tango_icon_48px.png", roles: ["DPS"], emoji : ":War:" },
+	  Berserker: { url: "https://wiki.guildwars2.com/images/7/70/Berserker_tango_icon_48px.png", roles: ["DPS"], emoji : ":Berserker:" },
+	  Spellbreaker: { url: "https://wiki.guildwars2.com/images/4/42/Spellbreaker_tango_icon_48px.png", roles: ["DPS", "Boon"], emoji : ":SPB:" },
+	  Bladesworn: { url: "https://wiki.guildwars2.com/images/f/f8/Bladesworn_tango_icon_48px.png", roles: ["DPS"], emoji : ":Bladesworn:" },
+	  Paragon: { url: "https://wiki.guildwars2.com/images/2/29/Paragon_tango_icon_48px.png", roles: ["Support", "Boon"], emoji : ":Paragon:" },
+		// Rev
+	  Revenant: { url: "https://wiki.guildwars2.com/images/5/53/Revenant_tango_icon_48px.png", roles: ["DPS"], emoji : ":Revenant:" },
+	  Herald: { url: "https://wiki.guildwars2.com/images/8/8f/Herald_tango_icon_48px.png", roles: ["DPS"], emoji : ":Herald:" },
+	  Renegade: { url: "https://wiki.guildwars2.com/images/4/4c/Renegade_tango_icon_48px.png", roles: ["Boon", "DPS"], emoji : ":Renegade:" },
+	  Vindicator: { url: "https://wiki.guildwars2.com/images/d/dd/Vindicator_tango_icon_48px.png", roles: ["Healer", "DPS"], emoji : ":Vindicator:" },
+	  Conduit: { url: "https://wiki.guildwars2.com/images/c/c0/Conduit_tango_icon_48px.png", roles: ["DPS"], emoji : ":Conduit:" },
+	    // Thief
+	  Thief: { url: "https://wiki.guildwars2.com/images/c/cd/Thief_tango_icon_48px.png", roles: ["DPS"], emoji : ":Thief:" },
+	  Daredevil: { url: "https://wiki.guildwars2.com/images/6/61/Daredevil_tango_icon_48px.png", roles: ["DPS"], emoji : ":Daredevil:" },
+	  Deadeye: { url: "https://wiki.guildwars2.com/images/8/81/Deadeye_tango_icon_48px.png", roles: ["DPS"], emoji : ":Deadeye:" },
+	  Specter: { url: "https://wiki.guildwars2.com/images/d/d7/Specter_tango_icon_48px.png", roles: ["Healer"], emoji : ":Specter:" },
+	  Antiquary: { url: "https://wiki.guildwars2.com/images/c/ce/Antiquary_tango_icon_48px.png", roles: ["DPS"], emoji : ":Antiquaire:" },
+	    // Elem
+	  Elementalist: { url: "https://wiki.guildwars2.com/images/5/55/Elementalist_tango_icon_48px.png", roles: ["DPS"], emoji : ":Elementalist:" },
+	  Tempest: { url: "https://wiki.guildwars2.com/images/4/40/Tempest_tango_icon_48px.png", roles: ["Healer"], emoji : ":Tempest:" },
+	  Weaver: { url: "https://wiki.guildwars2.com/images/2/2f/Weaver_tango_icon_48px.png", roles: ["DPS"], emoji : ":Weaver:" },
+	  Catalyst: { url: "https://wiki.guildwars2.com/images/0/08/Catalyst_tango_icon_48px.png", roles: ["Boon", "DPS"], emoji : ":Catalyst:" },
+	  Evoker: { url: "https://wiki.guildwars2.com/images/4/4b/Evoker_tango_icon_48px.png", roles: ["Boon", "DPS"], emoji : ":Evoker:" }
+	};
+
+
+    const iconsContainer = document.getElementById("icons");
+    const groupsContainer = document.getElementById("groups");
+    const statsContainer = document.getElementById("stats");
+    const detailsContainer = document.getElementById("details");
+
+	function createIcon(name, data) {
+	  const img = document.createElement("img");
+	  img.src = data.url;
+	  img.alt = name;
+	  img.title = name;
+	  img.className = "icon";
+	  img.dataset.roles = data.roles.join(",");
+	  img.draggable = true;
+	  img.addEventListener("dragstart", e => {
+		e.dataTransfer.setData("text/plain", name);
+	  });
+	  iconsContainer.appendChild(img);
+	}
+
+    Object.entries(classes).forEach(([name, url]) => createIcon(name, url));
+
+    function renderSlot(slot, className = null, pseudo = "") {
+      slot.replaceChildren();
+      delete slot.dataset.class;
+
+      if (!className || !classes[className]) {
+        const roleLabel = document.createElement("small");
+        roleLabel.textContent = slot.dataset.role;
+        slot.appendChild(roleLabel);
+        return;
+      }
+
+      slot.dataset.class = className;
+
+      const img = document.createElement("img");
+      img.src = classes[className].url;
+      img.alt = className;
+      img.className = "icon";
+      img.draggable = false;
+      slot.appendChild(img);
+
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.className = "player-name";
+      nameInput.placeholder = "Pseudo";
+      nameInput.setAttribute("aria-label", `Pseudo du joueur (${className})`);
+      nameInput.maxLength = 64;
+      nameInput.value = typeof pseudo === "string" ? pseudo : "";
+      nameInput.addEventListener("input", updateStats);
+      slot.appendChild(nameInput);
+
+      const roleLabel = document.createElement("small");
+      roleLabel.textContent = slot.dataset.role;
+      slot.appendChild(roleLabel);
+    }
+
+    function addGroup() {
+      const group = document.createElement("div");
+      group.className = "group";
+
+      const groupNumber = groupsContainer.children.length + 1;
+      const numberDiv = document.createElement("div");
+      numberDiv.className = "group-number";
+      numberDiv.textContent = `Groupe ${groupNumber}`;
+      numberDiv.style.marginRight = "10px";
+      numberDiv.style.fontWeight = "bold";
+      numberDiv.style.width = "80px";
+
+      const row = document.createElement("div");
+      row.style.display = "flex";
+      row.style.alignItems = "center";
+
+      row.appendChild(numberDiv);
+
+      roles.forEach(role => {
+        const slot = document.createElement("div");
+        slot.className = "slot";
+        slot.dataset.role = role;
+        renderSlot(slot);
+        slot.addEventListener("dragover", e => e.preventDefault());
+        slot.addEventListener("drop", e => {
+          e.preventDefault();
+          const className = e.dataTransfer.getData("text/plain");
+          if (classes[className]) {
+            const existingPseudo = slot.querySelector(".player-name")?.value || "";
+            renderSlot(slot, className, existingPseudo);
+            slot.classList.add("dropped");
+            setTimeout(() => slot.classList.remove("dropped"), 300);
+            updateStats();
+          }
+        });
+        row.appendChild(slot);
+      });
+
+      group.appendChild(row);
+      groupsContainer.appendChild(group);
+      updateStats();
+    }
+
+    function removeGroup() {
+      if (groupsContainer.lastChild) {
+        groupsContainer.removeChild(groupsContainer.lastChild);
+        updateStats();
+      }
+    }
+
+    function updateStats() {
+      const allSlots = document.querySelectorAll(".slot img");
+      const total = allSlots.length;
+      const roleCounts = { "Support": 0, "Healer": 0, "Boon": 0, "DPS": 0 };
+      const classCounts = {};
+
+      document.querySelectorAll(".slot").forEach(slot => {
+        const img = slot.querySelector("img");
+        if (img) {
+          const role = slot.dataset.role;
+          const name = img.alt;
+          roleCounts[role]++;
+          classCounts[name] = (classCounts[name] || 0) + 1;
+        }
+      });
+
+      statsContainer.innerHTML = `
+		  <h4>Statistiques globales</h4>
+		  <ul>
+			<li><strong>Total joueurs :</strong> ${total}</li>
+			<li><strong>Supports :</strong> ${roleCounts["Support"]}</li>
+			<li><strong>Healers :</strong> ${roleCounts["Healer"]}</li>
+			<li><strong>DPS :</strong> ${roleCounts["DPS"] + roleCounts["Boon"]}</li>
+		  </ul>
+		`;
+
+		detailsContainer.innerHTML = `<h4>Détail par classe</h4><ul>`;
+		for (const [cls, count] of Object.entries(classCounts)) {
+		  detailsContainer.innerHTML += `<li>${cls} : ${count}</li>`;
+		}
+		detailsContainer.innerHTML += `</ul>`;
+    }
+	
+	function filterIcons(role) {
+	  const icons = iconsContainer.querySelectorAll(".icon");
+	  icons.forEach(icon => {
+		const roles = icon.dataset.roles.split(",");
+		icon.style.display = (role === "All" || roles.includes(role)) ? "inline-block" : "none";
+	  });
+	}
+	
+	function resetGroups() {
+	  document.querySelectorAll(".slot").forEach(slot => {
+		renderSlot(slot);
+	  });
+	  updateStats();
+	}
+	
+	function updateRoles() {
+	  const support = parseInt(document.getElementById("role-support").value) || 0;
+	  const healer = parseInt(document.getElementById("role-healer").value) || 0;
+	  const boon = parseInt(document.getElementById("role-boon").value) || 0;
+	  const dps = parseInt(document.getElementById("role-dps").value) || 0;
+
+	  roles.length = 0;
+	  roles.push(...Array(support).fill("Support"));
+	  roles.push(...Array(healer).fill("Healer"));
+	  roles.push(...Array(boon).fill("Boon"));
+	  roles.push(...Array(dps).fill("DPS"));
+
+	  groupsContainer.innerHTML = "";
+	  for (let i = 0; i < 4; i++) addGroup();
+	}
+
+	function exportComposition() {
+	  const groupsData = [];
+	  document.querySelectorAll(".group").forEach((group, i) => {
+	    const composition = [];
+	    const pseudos = [];
+	    const slots = group.querySelectorAll(".slot");
+
+	    slots.forEach(slot => {
+	      const img = slot.querySelector("img");
+	      composition.push(img ? img.alt : null);
+	      pseudos.push(img ? (slot.querySelector(".player-name")?.value.trim() || "") : "");
+	    });
+
+	    const groupData = { groupe: i + 1, composition };
+	    // Champ optionnel : les anciens fichiers JSON sans pseudos restent valides.
+	    if (pseudos.some(pseudo => pseudo !== "")) groupData.pseudos = pseudos;
+	    groupsData.push(groupData);
+	  });
+
+	  const data = {
+	    groups: groupsData,
+	    customRoles: roles
+	  };
+	  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+	  const url = URL.createObjectURL(blob);
+	  const a = document.createElement("a");
+	  a.href = url;
+	  a.download = "composition_gw2.json";
+	  a.click();
+	  URL.revokeObjectURL(url);
+	}
+
+	function importComposition(event) {
+	  const file = event.target.files[0];
+	  if (!file) return;
+	  const reader = new FileReader();
+
+	  reader.onload = () => {
+	    try {
+	      const data = JSON.parse(reader.result);
+
+	      if (!Array.isArray(data.groups)) {
+	        showError("Fichier invalide : structure de groupes manquante.");
+	        return;
+	      }
+
+	      if (Array.isArray(data.customRoles)) {
+	        roles.length = 0;
+	        roles.push(...data.customRoles);
+	        updateRoleInputsFromRoles();
+	      }
+
+	      updateRoles();
+	      resetGroups();
+
+	      data.groups.forEach((groupData, i) => {
+	        if (i >= groupsContainer.children.length) addGroup();
+	        const group = groupsContainer.children[i];
+	        const slots = group.querySelectorAll(".slot");
+	        const composition = Array.isArray(groupData.composition) ? groupData.composition : [];
+	        // `pseudos` est facultatif pour conserver la compatibilité avec les anciens exports.
+	        const pseudos = Array.isArray(groupData.pseudos) ? groupData.pseudos : [];
+
+	        composition.forEach((className, j) => {
+	          const slot = slots[j];
+	          if (!slot) return;
+	          const pseudo = typeof pseudos[j] === "string" ? pseudos[j] : "";
+	          if (className && classes[className]) {
+	            renderSlot(slot, className, pseudo);
+	          } else {
+	            renderSlot(slot);
+	          }
+	        });
+	      });
+
+	      updateStats();
+	      event.target.value = "";
+	    } catch (e) {
+	      showError("Erreur lors de l'import : fichier JSON invalide.");
+	      event.target.value = "";
+	    }
+	  };
+	  reader.readAsText(file);
+	}
+
+	function updateRoleInputsFromRoles() {
+	  const counts = { Support: 0, Healer: 0, Boon: 0, DPS: 0 };
+	  roles.forEach(role => {
+		if (counts.hasOwnProperty(role)) counts[role]++;
+	  });
+	  document.getElementById("role-support").value = counts.Support;
+	  document.getElementById("role-healer").value = counts.Healer;
+	  document.getElementById("role-boon").value = counts.Boon;
+	  document.getElementById("role-dps").value = counts.DPS;
+	}
+
+	function generateDiscordMessage() {
+	  const groups = document.querySelectorAll('.group');
+	  const groupMessages = [];
+
+	  groups.forEach((group, index) => {
+	    const slots = group.querySelectorAll('.slot');
+	    const members = [];
+
+	    slots.forEach(slot => {
+	      // Le dataset est la source principale ; l'attribut alt permet de récupérer
+	      // la classe si le dataset a été perdu lors d'une ancienne manipulation DOM.
+	      const className = slot.dataset.class || slot.querySelector('img')?.alt;
+	      if (!className || !classes[className]) return; // Ne pas exporter :Unknown: pour un slot vide.
+
+	      const classData = classes[className];
+	      const emoji = classData.emoji || `:${className}:`;
+	      // Utiliser les vrais caractères CR/LF dans la regex, sans supprimer les lettres r/n.
+	      const pseudo = (slot.querySelector('.player-name')?.value || '')
+	        .replace(/[\r\n]+/g, ' ')
+	        .trim();
+	      members.push(pseudo ? `${emoji} **${pseudo}**` : emoji);
+	    });
+
+	    groupMessages.push(`Groupe ${index + 1} : ${members.length ? members.join(' - ') : '(aucun joueur)'}`);
+	  });
+
+	  // Des retours à la ligne réels, compatibles avec le presse-papiers et Discord.
+	  return groupMessages.join('\n');
+	}
+
+	document.getElementById('export-discord').addEventListener('click', () => {
+	  const discordMessage = generateDiscordMessage();
+	  navigator.clipboard.writeText(discordMessage)
+		.then(() => alert('Message Discord copié dans le presse-papiers !'))
+		.catch(err => console.error('Erreur de copie :', err));
+	});
+
+    const toggle = document.getElementById("mode-toggle");
+    const body = document.body;
+    if (localStorage.getItem("theme") === "dark") body.classList.add("dark-mode");
+
+    toggle.onclick = () => {
+      body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", body.classList.contains("dark-mode") ? "dark" : "light");
+    };
+
+    for (let i = 0; i < 4; i++) addGroup();
+	
+	function showError(message, duration = 3000) {
+	  const popup = document.getElementById("error-popup");
+	  popup.textContent = message;
+	  popup.style.display = "block";
+
+	  setTimeout(() => {
+		popup.style.display = "none";
+	  }, duration);
+	}
+  </script>
+  <div id="error-popup" style="display: none;"></div>
+</body>
+</html>
