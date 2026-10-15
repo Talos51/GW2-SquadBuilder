@@ -75,6 +75,55 @@ The generated text can then be pasted into a Discord channel to share the squad 
 
 > **Note:** Profession emoji codes must correspond to custom emoji available on your Discord server for the icons to render as intended.
 
+
+| Profession | Emoji |
+|---|---|
+| Guardian | `:Guard:` |
+| Dragonhunter | `:Dragonhunter:` |
+| Firebrand | `:Firebrand:` |
+| Willbender | `:Willbender:` |
+| Luminary | `:Luminary:` |
+| Ranger | `:Ranger:` |
+| Druid | `:Druid:` |
+| Soulbeast | `:Soulbeast:` |
+| Untamed | `:Untamed:` |
+| Galeshot | `:Galeshot:` |
+| Mesmer | `:Mesmer:` |
+| Chronomancer | `:Chronomancer:` |
+| Mirage | `:Mirage:` |
+| Virtuoso | `:Virtuose:` |
+| Troubadour | `:Troubadour:` |
+| Necromancer | `:Necro:` |
+| Reaper | `:Reaper:` |
+| Scourge | `:Scourge:` |
+| Harbinger | `:Harbinger:` |
+| Ritualist | `:Ritualist:` |
+| Engineer | `:Ingenieur:` |
+| Holosmith | `:Holosmith:` |
+| Scrapper | `:Scrap:` |
+| Mechanist | `:Mecanist:` |
+| Amalgam | `:Amalgam:` |
+| Warrior | `:War:` |
+| Berserker | `:Berserker:` |
+| Spellbreaker | `:SPB:` |
+| Bladesworn | `:Bladesworn:` |
+| Paragon | `:Paragon:` |
+| Revenant | `:Revenant:` |
+| Herald | `:Herald:` |
+| Renegade | `:Renegade:` |
+| Vindicator | `:Vindicator:` |
+| Conduit | `:Conduit:` |
+| Thief | `:Thief:` |
+| Daredevil | `:Daredevil:` |
+| Deadeye | `:Deadeye:` |
+| Specter | `:Specter:` |
+| Antiquary | `:Antiquaire:` |
+| Elementalist | `:Elementalist:` |
+| Tempest | `:Tempest:` |
+| Weaver | `:Weaver:` |
+| Catalyst | `:Catalyst:` |
+| Evoker | `:Evoker:` |
+
 ### Light and Dark Themes
 
 - Toggle between light and dark mode.
