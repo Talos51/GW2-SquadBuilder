@@ -293,6 +293,20 @@ body:not(.dark-mode) #custom-compo input[type="number"] {
   animation: fadeIn 0.3s ease;
 }
 
+#success-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #4ba600;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  font-size: 14px;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -326,6 +340,17 @@ body:not(.dark-mode) #custom-compo input[type="number"] {
 	    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Discord" style="height: 16px; vertical-align: middle; margin-right: 6px;">
 	    Exporter Discord
 	  </button>
+	  <button id="toggle-saved-compositions" type="button" aria-controls="saved-compositions" aria-expanded="true" onclick="toggleSavedCompositions()">📚 Afficher les compositions</button>
+      <div id="saved-compositions" style="margin:12px 0; padding:10px; border:1px solid #ccc; border-radius:8px; display : none;">
+        <h4 style="margin:0 0 8px;">Compositions enregistrées dans ce navigateur</h4>
+        <label for="composition-name">Nom de la composition :</label>
+        <input type="text" id="composition-name" maxlength="80" placeholder="My little squadron" style="box-sizing:border-box;width:100%;padding:6px;margin:4px 0 8px;">
+        <button onclick="saveCompositionToStorage()">💾 Enregistrer</button>
+        <label for="saved-compositions-list" style="display:block;margin-top:8px;">Compositions sauvegardées :</label>
+        <select id="saved-compositions-list" style="box-sizing:border-box;width:100%;padding:6px;margin:4px 0 8px;"></select>
+        <button onclick="loadCompositionFromStorage()">📂 Charger</button>
+        <button onclick="deleteCompositionFromStorage()">🗑️ Supprimer</button>
+      </div>
 	  <div id="custom-compo">
 	    <h4>Personnaliser la composition</h4>
 	    <label>Support: <input type="number" id="role-support" min="0" value="1"></label>
@@ -351,59 +376,59 @@ body:not(.dark-mode) #custom-compo input[type="number"] {
 	// https://wiki.guildwars2.com/wiki/Guild_Wars_2_Wiki:Profession_icons
     const classes = {
 		// Guard
-	  Guardian: { url: "https://wiki.guildwars2.com/images/5/53/Guardian_tango_icon_48px.png", roles: [], emoji : ":Guard:" },
-	  Dragonhunter: { url: "https://wiki.guildwars2.com/images/f/fe/Dragonhunter_tango_icon_48px.png", roles: ["Support", "DPS"], emoji : ":Dragonhunter:" },
-	  Firebrand: { url: "https://wiki.guildwars2.com/images/f/ff/Firebrand_tango_icon_48px.png", roles: ["Support"], emoji : ":Firebrand:" },
-	  Willbender: { url: "https://wiki.guildwars2.com/images/d/dd/Willbender_tango_icon_48px.png", roles: ["DPS"], emoji : ":Willbender:" },
-	  Luminary: { url: "https://wiki.guildwars2.com/images/d/d9/Luminary_tango_icon_48px.png", roles: ["Support"], emoji : ":Luminary:" },
+	  Guardian: { url: "assets/classes/Guardian.png", roles: [], emoji : ":Guard:" },
+	  Dragonhunter: { url: "assets/classes/Dragonhunter.png", roles: ["Support", "DPS"], emoji : ":Dragonhunter:" },
+	  Firebrand: { url: "assets/classes/Firebrand.png", roles: ["Support"], emoji : ":Firebrand:" },
+	  Willbender: { url: "assets/classes/Willbender.png", roles: ["DPS"], emoji : ":Willbender:" },
+	  Luminary: { url: "assets/classes/Luminary.png", roles: ["Support"], emoji : ":Luminary:" },
 		// Ranger
-	  Ranger: { url: "https://wiki.guildwars2.com/images/b/b5/Ranger_tango_icon_48px.png", roles: ["DPS"], emoji : ":Ranger:" },
-	  Druid: { url: "https://wiki.guildwars2.com/images/9/91/Druid_tango_icon_48px.png", roles: ["Healer"], emoji : ":Druid:" },
-	  Soulbeast: { url: "https://wiki.guildwars2.com/images/4/4f/Soulbeast_tango_icon_48px.png", roles: ["DPS"], emoji : ":Soulbeast:" },
-	  Untamed: { url: "https://wiki.guildwars2.com/images/9/90/Untamed_tango_icon_48px.png", roles: ["DPS"], emoji : ":Untamed:" },
-	  Galeshot: { url: "https://wiki.guildwars2.com/images/6/67/Galeshot_tango_icon_48px.png", roles: ["DPS"], emoji : ":Galeshot:" },
+	  Ranger: { url: "assets/classes/Ranger.png", roles: ["DPS"], emoji : ":Ranger:" },
+	  Druid: { url: "assets/classes/Druid.png", roles: ["Healer"], emoji : ":Druid:" },
+	  Soulbeast: { url: "assets/classes/Soulbeast.png", roles: ["DPS"], emoji : ":Soulbeast:" },
+	  Untamed: { url: "assets/classes/Untamed.png", roles: ["DPS"], emoji : ":Untamed:" },
+	  Galeshot: { url: "assets/classes/Galeshot.png", roles: ["DPS"], emoji : ":Galeshot:" },
 		// Mesmer
-	  Mesmer: { url: "https://wiki.guildwars2.com/images/3/38/Mesmer_tango_icon_48px.png", roles: ["DPS"], emoji : ":Mesmer:" },
-	  Chronomancer: { url: "https://wiki.guildwars2.com/images/f/f2/Chronomancer_tango_icon_48px.png", roles: ["Support"], emoji : ":Chronomancer:" },
-	  Mirage: { url: "https://wiki.guildwars2.com/images/9/94/Mirage_tango_icon_48px.png", roles: ["DPS"], emoji : ":Mirage:" },
-	  Virtuoso: { url: "https://wiki.guildwars2.com/images/2/21/Virtuoso_tango_icon_48px.png", roles: ["DPS"], emoji : ":Virtuose:" },
-	  Troubadour: { url: "https://wiki.guildwars2.com/images/3/35/Troubadour_tango_icon_48px.png", roles: ["Support"], emoji : ":Troubadour:" },
+	  Mesmer: { url: "assets/classes/Mesmer.png", roles: ["DPS"], emoji : ":Mesmer:" },
+	  Chronomancer: { url: "assets/classes/Chronomancer.png", roles: ["Support"], emoji : ":Chronomancer:" },
+	  Mirage: { url: "assets/classes/Mirage.png", roles: ["DPS"], emoji : ":Mirage:" },
+	  Virtuoso: { url: "assets/classes/Virtuoso.png", roles: ["DPS"], emoji : ":Virtuose:" },
+	  Troubadour: { url: "assets/classes/Troubadour.png", roles: ["Support"], emoji : ":Troubadour:" },
 		// Necro
-	  Necromancer: { url: "https://wiki.guildwars2.com/images/e/ea/Necromancer_tango_icon_48px.png", roles: ["DPS"], emoji : ":Necro:" },
-	  Reaper: { url: "https://wiki.guildwars2.com/images/3/39/Reaper_tango_icon_48px.png", roles: ["DPS"], emoji : ":Reaper:" },
-	  Scourge: { url: "https://wiki.guildwars2.com/images/4/49/Scourge_tango_icon_48px.png", roles: ["DPS"], emoji : ":Scourge:" },
-	  Harbinger: { url: "https://wiki.guildwars2.com/images/e/eb/Harbinger_tango_icon_48px.png", roles: ["Boon"], emoji : ":Harbinger:" },
-	  Ritualist: { url: "https://wiki.guildwars2.com/images/7/7a/Ritualist_tango_icon_48px.png", roles: ["DPS"], emoji : ":Ritualist:" },
+	  Necromancer: { url: "assets/classes/Necromancer.png", roles: ["DPS"], emoji : ":Necro:" },
+	  Reaper: { url: "assets/classes/Reaper.png", roles: ["DPS"], emoji : ":Reaper:" },
+	  Scourge: { url: "assets/classes/Scourge.png", roles: ["DPS"], emoji : ":Scourge:" },
+	  Harbinger: { url: "assets/classes/Harbinger.png", roles: ["Boon"], emoji : ":Harbinger:" },
+	  Ritualist: { url: "assets/classes/Ritualist.png", roles: ["DPS"], emoji : ":Ritualist:" },
 		// inge
-	  Engineer: { url: "https://wiki.guildwars2.com/images/d/dd/Engineer_tango_icon_48px.png", roles: ["DPS"], emoji : ":Ingenieur:" },	
-	  Holosmith: { url: "https://wiki.guildwars2.com/images/4/4f/Holosmith_tango_icon_48px.png", roles: ["DPS"], emoji : ":Holosmith:" },
-	  Scrapper: { url: "https://wiki.guildwars2.com/images/4/4a/Scrapper_tango_icon_48px.png", roles: ["Healer"], emoji : ":Scrap:" },
-	  Mechanist: { url: "https://wiki.guildwars2.com/images/f/f5/Mechanist_tango_icon_48px.png", roles: ["DPS"], emoji : ":Mecanist:" },
-	  Amalgam: { url: "https://wiki.guildwars2.com/images/5/5f/Amalgam_tango_icon_48px.png", roles: ["DPS"], emoji : ":Amalgam:" },
+	  Engineer: { url: "assets/classes/Engineer.png", roles: ["DPS"], emoji : ":Ingenieur:" },	
+	  Holosmith: { url: "assets/classes/Holosmith.png", roles: ["DPS"], emoji : ":Holosmith:" },
+	  Scrapper: { url: "assets/classes/Scrapper.png", roles: ["Healer"], emoji : ":Scrap:" },
+	  Mechanist: { url: "assets/classes/Mechanist.png", roles: ["DPS"], emoji : ":Mecanist:" },
+	  Amalgam: { url: "assets/classes/Amalgam.png", roles: ["DPS"], emoji : ":Amalgam:" },
 		// War
-	  Warrior: { url: "https://wiki.guildwars2.com/images/2/28/Warrior_tango_icon_48px.png", roles: ["DPS"], emoji : ":War:" },
-	  Berserker: { url: "https://wiki.guildwars2.com/images/7/70/Berserker_tango_icon_48px.png", roles: ["DPS"], emoji : ":Berserker:" },
-	  Spellbreaker: { url: "https://wiki.guildwars2.com/images/4/42/Spellbreaker_tango_icon_48px.png", roles: ["DPS", "Boon"], emoji : ":SPB:" },
-	  Bladesworn: { url: "https://wiki.guildwars2.com/images/f/f8/Bladesworn_tango_icon_48px.png", roles: ["DPS"], emoji : ":Bladesworn:" },
-	  Paragon: { url: "https://wiki.guildwars2.com/images/2/29/Paragon_tango_icon_48px.png", roles: ["Support", "Boon"], emoji : ":Paragon:" },
+	  Warrior: { url: "assets/classes/Warrior.png", roles: ["DPS"], emoji : ":War:" },
+	  Berserker: { url: "assets/classes/Berserker.png", roles: ["DPS"], emoji : ":Berserker:" },
+	  Spellbreaker: { url: "assets/classes/Spellbreaker.png", roles: ["DPS", "Boon"], emoji : ":SPB:" },
+	  Bladesworn: { url: "assets/classes/Bladesworn.png", roles: ["DPS"], emoji : ":Bladesworn:" },
+	  Paragon: { url: "assets/classes/Paragon.png", roles: ["Support", "Boon"], emoji : ":Paragon:" },
 		// Rev
-	  Revenant: { url: "https://wiki.guildwars2.com/images/5/53/Revenant_tango_icon_48px.png", roles: ["DPS"], emoji : ":Revenant:" },
-	  Herald: { url: "https://wiki.guildwars2.com/images/8/8f/Herald_tango_icon_48px.png", roles: ["DPS"], emoji : ":Herald:" },
-	  Renegade: { url: "https://wiki.guildwars2.com/images/4/4c/Renegade_tango_icon_48px.png", roles: ["Boon", "DPS"], emoji : ":Renegade:" },
-	  Vindicator: { url: "https://wiki.guildwars2.com/images/d/dd/Vindicator_tango_icon_48px.png", roles: ["Healer", "DPS"], emoji : ":Vindicator:" },
-	  Conduit: { url: "https://wiki.guildwars2.com/images/c/c0/Conduit_tango_icon_48px.png", roles: ["DPS"], emoji : ":Conduit:" },
+	  Revenant: { url: "assets/classes/Revenant.png", roles: ["DPS"], emoji : ":Revenant:" },
+	  Herald: { url: "assets/classes/Herald.png", roles: ["DPS"], emoji : ":Herald:" },
+	  Renegade: { url: "assets/classes/Renegade.png", roles: ["Boon", "DPS"], emoji : ":Renegade:" },
+	  Vindicator: { url: "assets/classes/Vindicator.png", roles: ["Healer", "DPS"], emoji : ":Vindicator:" },
+	  Conduit: { url: "assets/classes/Conduit.png", roles: ["DPS"], emoji : ":Conduit:" },
 	    // Thief
-	  Thief: { url: "https://wiki.guildwars2.com/images/c/cd/Thief_tango_icon_48px.png", roles: ["DPS"], emoji : ":Thief:" },
-	  Daredevil: { url: "https://wiki.guildwars2.com/images/6/61/Daredevil_tango_icon_48px.png", roles: ["DPS"], emoji : ":Daredevil:" },
-	  Deadeye: { url: "https://wiki.guildwars2.com/images/8/81/Deadeye_tango_icon_48px.png", roles: ["DPS"], emoji : ":Deadeye:" },
-	  Specter: { url: "https://wiki.guildwars2.com/images/d/d7/Specter_tango_icon_48px.png", roles: ["Healer"], emoji : ":Specter:" },
-	  Antiquary: { url: "https://wiki.guildwars2.com/images/c/ce/Antiquary_tango_icon_48px.png", roles: ["DPS"], emoji : ":Antiquaire:" },
+	  Thief: { url: "assets/classes/Thief.png", roles: ["DPS"], emoji : ":Thief:" },
+	  Daredevil: { url: "assets/classes/Daredevil.png", roles: ["DPS"], emoji : ":Daredevil:" },
+	  Deadeye: { url: "assets/classes/Deadeye.png", roles: ["DPS"], emoji : ":Deadeye:" },
+	  Specter: { url: "assets/classes/Specter.png", roles: ["Healer"], emoji : ":Specter:" },
+	  Antiquary: { url: "assets/classes/Antiquary.png", roles: ["DPS"], emoji : ":Antiquaire:" },
 	    // Elem
-	  Elementalist: { url: "https://wiki.guildwars2.com/images/5/55/Elementalist_tango_icon_48px.png", roles: ["DPS"], emoji : ":Elementalist:" },
-	  Tempest: { url: "https://wiki.guildwars2.com/images/4/40/Tempest_tango_icon_48px.png", roles: ["Healer"], emoji : ":Tempest:" },
-	  Weaver: { url: "https://wiki.guildwars2.com/images/2/2f/Weaver_tango_icon_48px.png", roles: ["DPS"], emoji : ":Weaver:" },
-	  Catalyst: { url: "https://wiki.guildwars2.com/images/0/08/Catalyst_tango_icon_48px.png", roles: ["Boon", "DPS"], emoji : ":Catalyst:" },
-	  Evoker: { url: "https://wiki.guildwars2.com/images/4/4b/Evoker_tango_icon_48px.png", roles: ["Boon", "DPS"], emoji : ":Evoker:" }
+	  Elementalist: { url: "assets/classes/Elementalist.png", roles: ["DPS"], emoji : ":Elementalist:" },
+	  Tempest: { url: "assets/classes/Tempest.png", roles: ["Healer"], emoji : ":Tempest:" },
+	  Weaver: { url: "assets/classes/Weaver.png", roles: ["DPS"], emoji : ":Weaver:" },
+	  Catalyst: { url: "assets/classes/Catalyst.png", roles: ["Boon", "DPS"], emoji : ":Catalyst:" },
+	  Evoker: { url: "assets/classes/Evoker.png", roles: ["Boon", "DPS"], emoji : ":Evoker:" }
 	};
 
 
@@ -411,6 +436,13 @@ body:not(.dark-mode) #custom-compo input[type="number"] {
     const groupsContainer = document.getElementById("groups");
     const statsContainer = document.getElementById("stats");
     const detailsContainer = document.getElementById("details");
+	const FALLBACK_ICON_URL = "https://cdn-icons-png.flaticon.com/128/3781/3781609.png";
+	
+	function handleIconError(img) {
+	  if (img.dataset.fallbackApplied === "true") return;
+	  img.dataset.fallbackApplied = "true";
+	  img.src = FALLBACK_ICON_URL;
+	}
 
 	function createIcon(name, data) {
 	  const img = document.createElement("img");
@@ -420,9 +452,13 @@ body:not(.dark-mode) #custom-compo input[type="number"] {
 	  img.className = "icon";
 	  img.dataset.roles = data.roles.join(",");
 	  img.draggable = true;
+
+	  img.addEventListener("error", () => handleIconError(img));
+
 	  img.addEventListener("dragstart", e => {
 		e.dataTransfer.setData("text/plain", name);
 	  });
+
 	  iconsContainer.appendChild(img);
 	}
 
@@ -441,12 +477,15 @@ body:not(.dark-mode) #custom-compo input[type="number"] {
 
       slot.dataset.class = className;
 
-      const img = document.createElement("img");
-      img.src = classes[className].url;
-      img.alt = className;
-      img.className = "icon";
-      img.draggable = false;
-      slot.appendChild(img);
+	  const img = document.createElement("img");
+	  img.src = classes[className].url;
+	  img.alt = className;
+	  img.className = "icon";
+	  img.draggable = false;
+	  
+	  img.addEventListener("error", () => handleIconError(img));
+
+	  slot.appendChild(img);
 
       const nameInput = document.createElement("input");
       nameInput.type = "text";
@@ -577,29 +616,169 @@ body:not(.dark-mode) #custom-compo input[type="number"] {
 	  for (let i = 0; i < 4; i++) addGroup();
 	}
 
+
+    // JSON est conservé dans le LocalStorage : Base64 augmenterait la taille des données.
+    const SAVED_COMPOSITIONS_KEY = "gw2SquadBuilder.savedCompositions.v1";
+
+    function getCompositionData() {
+      const groupsData = [];
+      document.querySelectorAll(".group").forEach((group, i) => {
+        const composition = [];
+        const pseudos = [];
+        group.querySelectorAll(".slot").forEach(slot => {
+          const img = slot.querySelector("img");
+          composition.push(img ? img.alt : null);
+          pseudos.push(img ? (slot.querySelector(".player-name")?.value.trim() || "") : "");
+        });
+        const groupData = { groupe: i + 1, composition };
+        if (pseudos.some(pseudo => pseudo !== "")) groupData.pseudos = pseudos;
+        groupsData.push(groupData);
+      });
+      return { groups: groupsData, customRoles: [...roles] };
+    }
+	
+	function toggleSavedCompositions() {
+      const panel = document.getElementById("saved-compositions");
+      const button = document.getElementById("toggle-saved-compositions");
+      const isHidden = panel.style.display === "none";
+
+      panel.style.display = isHidden ? "block" : "none";
+      button.textContent = isHidden ? "📚 Masquer les compositions" : "📚 Afficher les compositions";
+      button.setAttribute("aria-expanded", String(isHidden));
+    }
+
+    function readSavedCompositions() {
+      try {
+        const raw = localStorage.getItem(SAVED_COMPOSITIONS_KEY);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+      } catch (error) {
+        showError("Impossible de lire les compositions sauvegardées : stockage indisponible ou données invalides.");
+        return {};
+      }
+    }
+
+    function writeSavedCompositions(saved) {
+      try {
+        localStorage.setItem(SAVED_COMPOSITIONS_KEY, JSON.stringify(saved));
+        return true;
+      } catch (error) {
+        showError("Enregistrement impossible : stockage plein ou bloqué par le navigateur.");
+        return false;
+      }
+    }
+
+    function refreshSavedCompositions(selectedName = "") {
+      const select = document.getElementById("saved-compositions-list");
+      const saved = readSavedCompositions();
+      const names = Object.keys(saved).sort((a, b) => a.localeCompare(b, "fr"));
+      select.replaceChildren();
+      if (!names.length) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "Aucune composition enregistrée";
+        select.appendChild(option);
+        select.disabled = true;
+        return;
+      }
+      select.disabled = false;
+      names.forEach(name => {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
+      });
+      if (selectedName && names.includes(selectedName)) select.value = selectedName;
+    }
+
+    function saveCompositionToStorage() {
+      const nameInput = document.getElementById("composition-name");
+      const name = nameInput.value.trim();
+      if (!name) {
+        showError("Saisissez un nom pour cette composition.");
+        nameInput.focus();
+        return;
+      }
+      const saved = readSavedCompositions();
+      if (Object.prototype.hasOwnProperty.call(saved, name) &&
+          !confirm(`La composition « ${name} » existe déjà. Voulez-vous la remplacer ?`)) return;
+      saved[name] = getCompositionData();
+      if (writeSavedCompositions(saved)) {
+        refreshSavedCompositions(name);
+        showSuccess(`Composition « ${name} » enregistrée.`, 1800);
+      }
+    }
+
+    function loadCompositionFromStorage() {
+      const name = document.getElementById("saved-compositions-list").value;
+      if (!name) {
+        showError("Sélectionnez une composition à charger.");
+        return;
+      }
+      const saved = readSavedCompositions();
+      if (!Object.prototype.hasOwnProperty.call(saved, name)) {
+        showError("Cette composition n'existe plus dans le stockage.");
+        refreshSavedCompositions();
+        return;
+      }
+      if (applyCompositionData(saved[name])) {
+        document.getElementById("composition-name").value = name;
+        showSuccess(`Composition « ${name} » chargée.`, 1800);
+      }
+    }
+
+    function deleteCompositionFromStorage() {
+      const select = document.getElementById("saved-compositions-list");
+      const name = select.value;
+      if (!name) {
+        showError("Sélectionnez une composition à supprimer.");
+        return;
+      }
+      if (!confirm(`Supprimer définitivement la composition « ${name} » de ce navigateur ?`)) return;
+      const saved = readSavedCompositions();
+      delete saved[name];
+      if (writeSavedCompositions(saved)) {
+        refreshSavedCompositions();
+        if (document.getElementById("composition-name").value.trim() === name) {
+          document.getElementById("composition-name").value = "";
+        }
+      }
+    }
+
+    function applyCompositionData(data) {
+      if (!data || !Array.isArray(data.groups)) {
+        showError("Composition invalide : structure de groupes manquante.");
+        return false;
+      }
+      if (Array.isArray(data.customRoles) &&
+          data.customRoles.every(role => ["Support", "Healer", "Boon", "DPS"].includes(role))) {
+        roles.length = 0;
+        roles.push(...data.customRoles);
+        updateRoleInputsFromRoles();
+      }
+      updateRoles();
+      resetGroups();
+      data.groups.forEach((groupData, i) => {
+        if (i >= groupsContainer.children.length) addGroup();
+        const slots = groupsContainer.children[i].querySelectorAll(".slot");
+        const composition = Array.isArray(groupData.composition) ? groupData.composition : [];
+        const pseudos = Array.isArray(groupData.pseudos) ? groupData.pseudos : [];
+        composition.forEach((className, j) => {
+          const slot = slots[j];
+          if (!slot) return;
+          const pseudo = typeof pseudos[j] === "string" ? pseudos[j] : "";
+          if (className && classes[className]) renderSlot(slot, className, pseudo);
+          else renderSlot(slot);
+        });
+      });
+      updateStats();
+      return true;
+    }
+
 	function exportComposition() {
-	  const groupsData = [];
-	  document.querySelectorAll(".group").forEach((group, i) => {
-	    const composition = [];
-	    const pseudos = [];
-	    const slots = group.querySelectorAll(".slot");
+      const data = getCompositionData();
 
-	    slots.forEach(slot => {
-	      const img = slot.querySelector("img");
-	      composition.push(img ? img.alt : null);
-	      pseudos.push(img ? (slot.querySelector(".player-name")?.value.trim() || "") : "");
-	    });
-
-	    const groupData = { groupe: i + 1, composition };
-	    // Champ optionnel : les anciens fichiers JSON sans pseudos restent valides.
-	    if (pseudos.some(pseudo => pseudo !== "")) groupData.pseudos = pseudos;
-	    groupsData.push(groupData);
-	  });
-
-	  const data = {
-	    groups: groupsData,
-	    customRoles: roles
-	  };
 	  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
 	  const url = URL.createObjectURL(blob);
 	  const a = document.createElement("a");
@@ -616,44 +795,9 @@ body:not(.dark-mode) #custom-compo input[type="number"] {
 
 	  reader.onload = () => {
 	    try {
-	      const data = JSON.parse(reader.result);
-
-	      if (!Array.isArray(data.groups)) {
-	        showError("Fichier invalide : structure de groupes manquante.");
-	        return;
-	      }
-
-	      if (Array.isArray(data.customRoles)) {
-	        roles.length = 0;
-	        roles.push(...data.customRoles);
-	        updateRoleInputsFromRoles();
-	      }
-
-	      updateRoles();
-	      resetGroups();
-
-	      data.groups.forEach((groupData, i) => {
-	        if (i >= groupsContainer.children.length) addGroup();
-	        const group = groupsContainer.children[i];
-	        const slots = group.querySelectorAll(".slot");
-	        const composition = Array.isArray(groupData.composition) ? groupData.composition : [];
-	        // `pseudos` est facultatif pour conserver la compatibilité avec les anciens exports.
-	        const pseudos = Array.isArray(groupData.pseudos) ? groupData.pseudos : [];
-
-	        composition.forEach((className, j) => {
-	          const slot = slots[j];
-	          if (!slot) return;
-	          const pseudo = typeof pseudos[j] === "string" ? pseudos[j] : "";
-	          if (className && classes[className]) {
-	            renderSlot(slot, className, pseudo);
-	          } else {
-	            renderSlot(slot);
-	          }
-	        });
-	      });
-
-	      updateStats();
-	      event.target.value = "";
+          const data = JSON.parse(reader.result);
+          applyCompositionData(data);
+          event.target.value = "";
 	    } catch (e) {
 	      showError("Erreur lors de l'import : fichier JSON invalide.");
 	      event.target.value = "";
@@ -720,17 +864,25 @@ body:not(.dark-mode) #custom-compo input[type="number"] {
     };
 
     for (let i = 0; i < 4; i++) addGroup();
-	
+    refreshSavedCompositions();
+
 	function showError(message, duration = 3000) {
 	  const popup = document.getElementById("error-popup");
+      if (!popup) { alert(message); return; }
 	  popup.textContent = message;
 	  popup.style.display = "block";
-
-	  setTimeout(() => {
-		popup.style.display = "none";
-	  }, duration);
+	  setTimeout(() => { popup.style.display = "none"; }, duration);
+	}
+	
+	function showSuccess(message, duration = 3000) {
+	  const popup = document.getElementById("success-popup");
+      if (!popup) { alert(message); return; }
+	  popup.textContent = message;
+	  popup.style.display = "block";
+	  setTimeout(() => { popup.style.display = "none"; }, duration);
 	}
   </script>
   <div id="error-popup" style="display: none;"></div>
+  <div id="success-popup" style="display: none;"></div>
 </body>
 </html>
