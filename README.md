@@ -137,7 +137,6 @@ The generated text can then be pasted into a Discord channel to share the squad 
 ### Requirements
 
 - A modern web browser.
-- An internet connection to load profession icons from the Guild Wars 2 Wiki.
 - Clipboard access for the Discord export feature.
 
 No build tools, package manager, server, or additional dependencies are required.
@@ -179,7 +178,6 @@ Alternatively, use my GitHub Pages hosting the application as a static website :
 | CSS3 | Layout, styling, and themes |
 | Vanilla JavaScript | Composition management and application logic |
 | Browser APIs | Drag and drop, file import/export, local storage, and clipboard access |
-| Guild Wars 2 Wiki | Profession and specialization icons |
 
 The application is designed to remain lightweight and easy to deploy, with no framework or external JavaScript library required.
 
@@ -197,7 +195,6 @@ The application is currently implemented as a self-contained HTML file.
 - Profession availability and role assignments are defined directly in the source code.
 - Role assignments are intended as composition-planning categories; they do not validate actual in-game builds or skill configurations.
 - JSON compositions are stored locally through file downloads and imports rather than a shared online database.
-- Profession icons require access to the Guild Wars 2 Wiki.
 - Discord export copies formatted text and emoji codes; it does not publish messages directly to Discord.
 - The application does not synchronize compositions between users.
 
