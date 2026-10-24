@@ -58,7 +58,9 @@ Save your squad composition locally and restore it later.
 - Maintain compatibility with older JSON files that do not contain player names.
 - Validate the basic file structure and report invalid imports.
 
-No server-side storage is required: composition files are handled locally in the browser.
+### Browser Import and Export
+
+You can store directly in your browser localStorage every compositions you made. No server-side storage is required: composition files are handled locally in the browser memory.
 
 ### Discord Export
 
